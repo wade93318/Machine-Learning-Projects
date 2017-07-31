@@ -1,0 +1,84 @@
+from sklearn.feature_extraction import DictVectorizer
+import csv
+from sklearn import preprocessing
+from sklearn import tree
+from sklearn.externals.six import StringIO
+
+# read data from specificed file path
+with open(r'/Users/lizewei/Desktop/Machinelearning_test/dataset.csv','r') as allDataSet:
+    reader = csv.reader(allDataSet)
+    headers = next(reader)
+    print headers
+
+    FeaturesList = []
+    LabelList = []
+
+    for row in reader:
+        LabelList.append(row[-1])
+        RowDict = {}
+        for i in range(1, len(row)-1):
+            RowDict[headers[i]] = row[i]
+        FeaturesList.append(RowDict)
+    print FeaturesList
+
+allDataSet.close()
+
+# Transfer data into different data format which can be used by sk-learn library
+vector = DictVectorizer()
+dummyX = vector.fit_transform(FeaturesList)
+#print str(dummyx)
+#print vector.get_feature_names()
+lb = preprocessing.LabelBinarizer()
+dummyY = lb.fit_transform(LabelList)
+print dummyY
+
+# processing Decision Tree
+clf = tree.DecisionTreeClassifier(criterion='entropy')
+clf = clf.fit(dummyX,dummyY)
+print clf
+
+# Output the result of Decision Tree
+with open('/Users/lizewei/Desktop/Machinelearning_test/DecisionTree.dot', 'w') as f:
+    f = tree.export_graphviz(clf,feature_names=vector.get_feature_names(),out_file=f)
+    oneRowX = dummyX[0, :]
+    print oneRowX
+
+newRow = oneRowX
+newRow[0] = 1
+newRow[1] = 0
+print newRow
+
+predictedY = clf.predict(newRow)
+print predictedY[-1]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
